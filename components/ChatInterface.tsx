@@ -9,9 +9,10 @@ interface ChatInterfaceProps {
   userName: string;
   userProfile: OnboardingData;
   userId: string;
+  onInputFocusChange?: (isFocused: boolean) => void;
 }
 
-export default function ChatInterface({ userName, userProfile, userId }: ChatInterfaceProps) {
+export default function ChatInterface({ userName, userProfile, userId, onInputFocusChange }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -308,6 +309,8 @@ export default function ChatInterface({ userName, userProfile, userId }: ChatInt
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyPress={handleKeyPress}
+              onFocus={() => onInputFocusChange?.(true)}
+              onBlur={() => onInputFocusChange?.(false)}
               placeholder="iMessage"
               className="flex-1 bg-transparent outline-none text-white text-[17px] placeholder:text-[#8E8E93] leading-[21px]"
             />

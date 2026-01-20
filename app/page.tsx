@@ -15,6 +15,7 @@ export default function Home() {
   const [userId, setUserId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'home' | 'goals' | 'progress' | 'log'>('home');
   const [isLoading, setIsLoading] = useState(true);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   // Set mobile viewport height CSS variable
   useEffect(() => {
@@ -114,23 +115,26 @@ export default function Home() {
           <div className="md:hidden fixed inset-0 w-full bg-black flex flex-col">
             {/* Content */}
             <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
-              {activeTab === 'home' && <ChatInterface userName={userProfile.name} userProfile={userProfile} userId={userId!} />}
+              {activeTab === 'home' && <ChatInterface userName={userProfile.name} userProfile={userProfile} userId={userId!} onInputFocusChange={setIsInputFocused} />}
               {activeTab === 'goals' && <GoalsView userProfile={userProfile} userId={userId!} />}
               {activeTab === 'progress' && <ProgressView userProfile={userProfile} userId={userId!} />}
               {activeTab === 'log' && <LogView userId={userId!} />}
             </div>
 
-            <BottomNav
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              userId={userId!}
-              onDataUpdate={() => {
-                // Force re-render of views by changing active tab momentarily
-                const currentTab = activeTab;
-                setActiveTab('home');
-                setTimeout(() => setActiveTab(currentTab), 10);
-              }}
-            />
+            {/* Hide bottom nav when input is focused (keyboard open) */}
+            {!isInputFocused && (
+              <BottomNav
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                userId={userId!}
+                onDataUpdate={() => {
+                  // Force re-render of views by changing active tab momentarily
+                  const currentTab = activeTab;
+                  setActiveTab('home');
+                  setTimeout(() => setActiveTab(currentTab), 10);
+                }}
+              />
+            )}
           </div>
 
           {/* Desktop/Tablet: iPhone Frame Mockup */}
@@ -156,7 +160,7 @@ export default function Home() {
 
                 {/* Content */}
                 <div className="flex-1 overflow-hidden flex flex-col mt-11">
-                  {activeTab === 'home' && <ChatInterface userName={userProfile.name} userProfile={userProfile} userId={userId!} />}
+                  {activeTab === 'home' && <ChatInterface userName={userProfile.name} userProfile={userProfile} userId={userId!} onInputFocusChange={setIsInputFocused} />}
                   {activeTab === 'goals' && <GoalsView userProfile={userProfile} userId={userId!} />}
                   {activeTab === 'progress' && <ProgressView userProfile={userProfile} userId={userId!} />}
                   {activeTab === 'log' && <LogView userId={userId!} />}
