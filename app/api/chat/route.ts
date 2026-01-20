@@ -160,16 +160,28 @@ export async function POST(request: NextRequest) {
 
     const aiMessage = completion.choices[0].message.content;
 
-    // Save AI response to database
-    const { data: savedAiMessage } = await supabase
-      .from('messages')
-      .insert({
-        user_id: userId,
-        role: 'assistant',
-        content: aiMessage,
-      })
-      .select()
-      .single();
+    // Split message by "||| " if present (for multi-message responses)
+    const messageParts = aiMessage?.split('||| ').filter(part => part.trim()) || [aiMessage];
+
+    // Save all message parts to database
+    const savedMessages = [];
+    for (const part of messageParts) {
+      const { data } = await supabase
+        .from('messages')
+        .insert({
+          user_id: userId,
+          role: 'assistant',
+          content: part.trim(),
+        })
+        .select()
+        .single();
+
+      if (data) {
+        savedMessages.push(data);
+      }
+    }
+
+    const savedAiMessage = savedMessages[0]; // Use first message for meal extraction
 
     // Try to extract meal data from AI response
     // Look for patterns like "Estimated: XXX cal | XXg protein | XXg carbs | XXg fat"
@@ -231,7 +243,13 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: aiMessage,
+      messages: messageParts.map((content, index) => ({
+        id: savedMessages[index]?.id || `temp-${Date.now()}-${index}`,
+        user_id: userId,
+        role: 'assistant',
+        content,
+        timestamp: new Date().toISOString(),
+      })),
       macros,
     });
   } catch (error: any) {

@@ -116,15 +116,16 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
         throw new Error(data.error || 'Failed to get response');
       }
 
-      const aiResponse: Message = {
+      // Handle multiple messages from AI response
+      const aiMessages = data.messages || [{
         id: (Date.now() + 1).toString(),
         user_id: 'system',
         role: 'assistant',
         content: data.message,
         timestamp: new Date().toISOString(),
-      };
+      }];
 
-      setMessages(prev => [...prev, aiResponse]);
+      setMessages(prev => [...prev, ...aiMessages]);
     } catch (error) {
       console.error('Error getting AI response:', error);
       const errorMessage: Message = {
