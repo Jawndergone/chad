@@ -17,6 +17,7 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
   const [inputText, setInputText] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [isInputReadonly, setIsInputReadonly] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load message history on mount
@@ -144,6 +145,18 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const handleInputFocus = () => {
+    // Remove readonly after a tiny delay to prevent Safari QuickType
+    setTimeout(() => setIsInputReadonly(false), 100);
+    onInputFocusChange?.(true);
+  };
+
+  const handleInputBlur = () => {
+    // Re-enable readonly when input loses focus
+    setIsInputReadonly(true);
+    onInputFocusChange?.(false);
   };
 
   const formatTime = (timestamp: string) => {
@@ -310,9 +323,10 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyPress={handleKeyPress}
-              onFocus={() => onInputFocusChange?.(true)}
-              onBlur={() => onInputFocusChange?.(false)}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
               placeholder="iMessage"
+              readOnly={isInputReadonly}
               autoComplete="off"
               autoCorrect="on"
               autoCapitalize="sentences"
