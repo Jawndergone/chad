@@ -55,7 +55,7 @@ export default function BottomNav({ activeTab, onTabChange, userId, onDataUpdate
   };
 
   return (
-    <div className="relative bg-[#1C1C1E] border-t border-[#2C2C2E] px-2 py-1.5 flex-shrink-0">
+    <div className="relative bg-[#1C1C1E] border-t border-[#2C2C2E] px-2 py-1 flex-shrink-0">
       <div className="flex items-center justify-around">
         {/* Left tabs */}
         <div className="flex-1 flex justify-around">
@@ -63,14 +63,14 @@ export default function BottomNav({ activeTab, onTabChange, userId, onDataUpdate
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center justify-center py-2 px-4 rounded-lg transition-colors ${
+              className={`flex flex-col items-center justify-center py-1 px-3 transition-colors ${
                 activeTab === tab.id
                   ? 'text-white'
                   : 'text-gray-500 hover:text-gray-400'
               }`}
             >
-              <span className="text-2xl mb-1">{tab.icon}</span>
-              <span className={`text-xs font-medium ${
+              <span className="text-lg">{tab.icon}</span>
+              <span className={`text-[10px] font-medium ${
                 activeTab === tab.id ? 'text-white' : 'text-gray-500'
               }`}>
                 {tab.label}
@@ -83,15 +83,15 @@ export default function BottomNav({ activeTab, onTabChange, userId, onDataUpdate
         <div className="flex items-center justify-center">
           <button
             onClick={handleAddFood}
-            className="w-16 h-16 bg-[#3478F6] rounded-full flex items-center justify-center transition-colors hover:bg-[#2d66d4]"
+            className="w-[52px] h-[52px] bg-[#3478F6] rounded-full flex items-center justify-center transition-colors hover:bg-[#2d66d4] -mt-2"
           >
             <svg
-              width="24"
-              height="24"
+              width="22"
+              height="22"
               viewBox="0 0 24 24"
               fill="none"
               stroke="white"
-              strokeWidth="3"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -107,14 +107,14 @@ export default function BottomNav({ activeTab, onTabChange, userId, onDataUpdate
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center justify-center py-2 px-4 rounded-lg transition-colors ${
+              className={`flex flex-col items-center justify-center py-1 px-3 transition-colors ${
                 activeTab === tab.id
                   ? 'text-white'
                   : 'text-gray-500 hover:text-gray-400'
               }`}
             >
-              <span className="text-2xl mb-1">{tab.icon}</span>
-              <span className={`text-xs font-medium ${
+              <span className="text-lg">{tab.icon}</span>
+              <span className={`text-[10px] font-medium ${
                 activeTab === tab.id ? 'text-white' : 'text-gray-500'
               }`}>
                 {tab.label}
