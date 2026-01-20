@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import { createChadSystemPrompt, calculateMacros } from '@/lib/macros';
 import { OnboardingData } from '@/components/OnboardingFlow';
 import { supabase } from '@/lib/supabase';
+import { detectPreferences, loadUserPreferences } from '@/lib/preferences';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -71,6 +72,12 @@ export async function POST(request: NextRequest) {
     // Create Chad's system prompt
     let systemPrompt = createChadSystemPrompt(userProfile, macros);
 
+    // Load learned user preferences
+    const userPreferences = await loadUserPreferences(userId);
+    if (userPreferences) {
+      systemPrompt += userPreferences;
+    }
+
     // Build context sections
     let contextSections = [];
 
@@ -132,6 +139,10 @@ export async function POST(request: NextRequest) {
 
     // Get the last user message to save to database
     const lastUserMessage = messages[messages.length - 1];
+
+    // Detect and learn preferences from user message (runs in background)
+    detectPreferences(userId, lastUserMessage.content, messages.slice(-5))
+      .catch(err => console.error('Error detecting preferences:', err));
 
     // Save user message to database
     const { data: savedUserMessage } = await supabase

@@ -86,6 +86,19 @@ CREATE TABLE IF NOT EXISTS exercise_logs (
   logged_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- User preferences table (AI learning)
+CREATE TABLE IF NOT EXISTS user_preferences (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
+  preference_type TEXT NOT NULL CHECK (preference_type IN ('explicit', 'implicit', 'lifestyle', 'communication')),
+  preference_key TEXT NOT NULL,
+  preference_value TEXT NOT NULL,
+  confidence DECIMAL(3,2) DEFAULT 1.0, -- How confident we are (0.0-1.0)
+  source TEXT, -- Where this came from (e.g., "user said X", "detected from conversation")
+  learned_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_messages_user_id ON messages(user_id);
 CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
@@ -95,6 +108,8 @@ CREATE INDEX IF NOT EXISTS idx_daily_stats_user_date ON daily_stats(user_id, dat
 CREATE INDEX IF NOT EXISTS idx_weight_logs_user_date ON weight_logs(user_id, logged_at DESC);
 CREATE INDEX IF NOT EXISTS idx_water_logs_user_date ON water_logs(user_id, logged_at DESC);
 CREATE INDEX IF NOT EXISTS idx_exercise_logs_user_date ON exercise_logs(user_id, logged_at DESC);
+CREATE INDEX IF NOT EXISTS idx_user_preferences_user_id ON user_preferences(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_preferences_type ON user_preferences(user_id, preference_type);
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
@@ -104,6 +119,7 @@ ALTER TABLE daily_stats ENABLE ROW LEVEL SECURITY;
 ALTER TABLE weight_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE water_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE exercise_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_preferences ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies (allow all for now, can be restricted later)
 CREATE POLICY "Allow all operations on user_profiles" ON user_profiles FOR ALL USING (true);
@@ -113,3 +129,4 @@ CREATE POLICY "Allow all operations on daily_stats" ON daily_stats FOR ALL USING
 CREATE POLICY "Allow all operations on weight_logs" ON weight_logs FOR ALL USING (true);
 CREATE POLICY "Allow all operations on water_logs" ON water_logs FOR ALL USING (true);
 CREATE POLICY "Allow all operations on exercise_logs" ON exercise_logs FOR ALL USING (true);
+CREATE POLICY "Allow all operations on user_preferences" ON user_preferences FOR ALL USING (true);
