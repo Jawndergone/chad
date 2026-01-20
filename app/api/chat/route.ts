@@ -166,6 +166,8 @@ export async function POST(request: NextRequest) {
     // Save all message parts to database
     const savedMessages: any[] = [];
     for (const part of messageParts) {
+      if (!part) continue;
+
       const { data } = await supabase
         .from('messages')
         .insert({
