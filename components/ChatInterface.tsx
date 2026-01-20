@@ -206,33 +206,46 @@ export default function ChatInterface({ userName, userProfile, userId }: ChatInt
 
   return (
     <div className="flex flex-col h-full bg-black">
-      {/* Header */}
-      <div className="bg-[#1C1C1E] border-b border-gray-800 pt-3 pb-3 flex-shrink-0">
-        <div className="flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-16 h-16 rounded-2xl mx-auto mb-2 overflow-hidden shadow-md">
-              <Image
-                src="/chad-logo.png"
-                alt="Chad"
-                width={64}
-                height={64}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="font-semibold text-white text-sm">Chad</div>
-          </div>
-        </div>
+      {/* Top Nav Bar */}
+      <div className="bg-black flex-shrink-0 px-4 py-2 flex items-center justify-between">
+        <button className="text-[#3478F6] text-[17px] flex items-center">
+          <svg width="13" height="21" viewBox="0 0 13 21" fill="none">
+            <path d="M10.5 18L3 10.5L10.5 3" stroke="#3478F6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <span className="ml-1">Messages</span>
+        </button>
+        <button className="w-8 h-8 rounded-full flex items-center justify-center">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="1.5" fill="#3478F6"/>
+            <circle cx="10" cy="4" r="1.5" fill="#3478F6"/>
+            <circle cx="10" cy="16" r="1.5" fill="#3478F6"/>
+          </svg>
+        </button>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-8 pt-8 pb-6 bg-black">
-        <div className="space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-2 bg-black">
+        {/* Contact Header (scrollable) */}
+        <div className="flex flex-col items-center mb-6 pt-2">
+          <div className="w-16 h-16 rounded-full overflow-hidden shadow-lg mb-2">
+            <Image
+              src="/chad-logo.png"
+              alt="Chad"
+              width={64}
+              height={64}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="font-semibold text-white text-[15px]">Chad</div>
+        </div>
+
+        <div className="space-y-2">
         {messages.map((message, index) => (
           <div key={message.id}>
             {/* Timestamp */}
             {shouldShowTimestamp(index) && (
-              <div className="text-center mb-3 mt-2">
-                <span className="text-[13px] text-gray-500">
+              <div className="text-center mb-2 mt-3">
+                <span className="text-[11px] text-gray-500 font-medium">
                   {formatMessageGroupTime(message.timestamp)}
                 </span>
               </div>
@@ -242,20 +255,20 @@ export default function ChatInterface({ userName, userProfile, userId }: ChatInt
             <div className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`flex flex-col max-w-[70%]`}>
                 <div
-                  className={`rounded-[20px] px-4 py-2.5 ${
+                  className={`rounded-[18px] px-3.5 py-2 ${
                     message.role === 'user'
                       ? 'bg-[#3478F6] text-white rounded-br-[4px]'
                       : 'bg-[#3A3A3C] text-white rounded-bl-[4px]'
                   }`}
                 >
-                  <p className="text-[20px] leading-[25px]">
+                  <p className="text-[17px] leading-[22px]">
                     {message.content}
                   </p>
                 </div>
 
                 {/* Delivered receipt for most recent user message only */}
                 {message.role === 'user' && isLastUserMessage(index) && (
-                  <span className="text-[11px] text-gray-500 mt-0.5 text-right">
+                  <span className="text-[10px] text-gray-500 mt-0.5 text-right">
                     Delivered
                   </span>
                 )}
@@ -264,8 +277,8 @@ export default function ChatInterface({ userName, userProfile, userId }: ChatInt
           </div>
         ))}
         {isSending && (
-          <div className="flex justify-start mt-4">
-            <div className="bg-[#3A3A3C] rounded-[20px] rounded-bl-[4px] px-4 py-3">
+          <div className="flex justify-start mt-2">
+            <div className="bg-[#3A3A3C] rounded-[18px] rounded-bl-[4px] px-3.5 py-2.5">
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
@@ -279,27 +292,47 @@ export default function ChatInterface({ userName, userProfile, userId }: ChatInt
       </div>
 
       {/* Input */}
-      <div className="border-t border-[#2C2C2E] bg-[#1C1C1E] px-4 py-2.5 flex-shrink-0">
-        <div className="flex items-center space-x-2">
-          <div className="flex-1 bg-[#2C2C2E] border border-[#3A3A3C] rounded-full px-4 py-2 flex items-center min-h-[36px]">
+      <div className="bg-[#1C1C1E] px-2 py-2 flex-shrink-0">
+        <div className="flex items-end space-x-2">
+          {/* Plus button */}
+          <button className="w-8 h-8 bg-[#2C2C2E] rounded-full flex items-center justify-center flex-shrink-0 mb-0.5">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 4V16M4 10H16" stroke="#8E8E93" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </button>
+
+          {/* Input field */}
+          <div className="flex-1 bg-[#2C2C2E] rounded-[18px] px-3.5 py-1.5 flex items-center min-h-[33px]">
             <input
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="iMessage"
-              className="flex-1 bg-transparent outline-none text-white text-[17px] placeholder:text-[#636366]"
+              className="flex-1 bg-transparent outline-none text-white text-[17px] placeholder:text-[#8E8E93] leading-[21px]"
             />
           </div>
-          <button
-            onClick={handleSend}
-            disabled={!inputText.trim() || isSending}
-            className="w-9 h-9 bg-[#3478F6] rounded-full flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-            </svg>
-          </button>
+
+          {/* Mic or Send button */}
+          {inputText.trim() ? (
+            <button
+              onClick={handleSend}
+              disabled={isSending}
+              className="w-8 h-8 bg-[#3478F6] rounded-full flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0 mb-0.5"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+            </button>
+          ) : (
+            <button className="w-8 h-8 flex items-center justify-center flex-shrink-0 mb-0.5">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 15C13.6569 15 15 13.6569 15 12V6C15 4.34315 13.6569 3 12 3C10.3431 3 9 4.34315 9 6V12C9 13.6569 10.3431 15 12 15Z" stroke="#8E8E93" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M19 10V12C19 15.866 15.866 19 12 19C8.13401 19 5 15.866 5 12V10" stroke="#8E8E93" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M12 19V22M8 22H16" stroke="#8E8E93" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          )}
         </div>
       </div>
     </div>
