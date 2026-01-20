@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
     const messageParts = aiMessage?.split('||| ').filter(part => part.trim()) || [aiMessage];
 
     // Save all message parts to database
-    const savedMessages = [];
+    const savedMessages: any[] = [];
     for (const part of messageParts) {
       const { data } = await supabase
         .from('messages')
