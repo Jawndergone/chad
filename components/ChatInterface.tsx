@@ -39,27 +39,99 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
             }))
           );
         } else {
-          // No history, show welcome message
+          // No history, show welcome messages (multiple short messages)
+          const now = new Date().toISOString();
           setMessages([
             {
               id: '1',
               user_id: 'system',
               role: 'assistant',
-              content: `Hey ${userName}! I'm Chad, your fitness buddy. I've calculated your daily targets based on your goals. Just text me what you're eating and I'll track everything for you! 💪`,
-              timestamp: new Date().toISOString(),
+              content: `Hey ${userName}`,
+              timestamp: now,
+            },
+            {
+              id: '2',
+              user_id: 'system',
+              role: 'assistant',
+              content: `I'm Chad`,
+              timestamp: now,
+            },
+            {
+              id: '3',
+              user_id: 'system',
+              role: 'assistant',
+              content: `Your fitness buddy`,
+              timestamp: now,
+            },
+            {
+              id: '4',
+              user_id: 'system',
+              role: 'assistant',
+              content: `I calculated your daily targets`,
+              timestamp: now,
+            },
+            {
+              id: '5',
+              user_id: 'system',
+              role: 'assistant',
+              content: `Just text me what you're eating`,
+              timestamp: now,
+            },
+            {
+              id: '6',
+              user_id: 'system',
+              role: 'assistant',
+              content: `I'll track everything for you`,
+              timestamp: now,
             },
           ]);
         }
       } catch (error) {
         console.error('Error loading messages:', error);
-        // Show welcome message on error
+        // Show welcome messages on error (multiple short messages)
+        const now = new Date().toISOString();
         setMessages([
           {
             id: '1',
             user_id: 'system',
             role: 'assistant',
-            content: `Hey ${userName}! I'm Chad, your fitness buddy. I've calculated your daily targets based on your goals. Just text me what you're eating and I'll track everything for you! 💪`,
-            timestamp: new Date().toISOString(),
+            content: `Hey ${userName}`,
+            timestamp: now,
+          },
+          {
+            id: '2',
+            user_id: 'system',
+            role: 'assistant',
+            content: `I'm Chad`,
+            timestamp: now,
+          },
+          {
+            id: '3',
+            user_id: 'system',
+            role: 'assistant',
+            content: `Your fitness buddy`,
+            timestamp: now,
+          },
+          {
+            id: '4',
+            user_id: 'system',
+            role: 'assistant',
+            content: `I calculated your daily targets`,
+            timestamp: now,
+          },
+          {
+            id: '5',
+            user_id: 'system',
+            role: 'assistant',
+            content: `Just text me what you're eating`,
+            timestamp: now,
+          },
+          {
+            id: '6',
+            user_id: 'system',
+            role: 'assistant',
+            content: `I'll track everything for you`,
+            timestamp: now,
           },
         ]);
       } finally {
