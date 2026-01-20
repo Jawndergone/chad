@@ -11,7 +11,7 @@ export default function ProgressView({ userProfile, userId }: ProgressViewProps)
   // TODO: Get actual data from database
   const currentWeight = userProfile.weightLbs;
   const targetWeight = userProfile.targetWeight || currentWeight;
-  const weightChange = 0; // TODO: Calculate from historical data
+  const weightChange: number = 0; // TODO: Calculate from historical data
   const daysTracking = 1;
 
   return (
