@@ -312,6 +312,10 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
               onFocus={() => onInputFocusChange?.(true)}
               onBlur={() => onInputFocusChange?.(false)}
               placeholder="iMessage"
+              autoComplete="off"
+              autoCorrect="on"
+              autoCapitalize="sentences"
+              spellCheck="true"
               className="flex-1 bg-transparent outline-none text-white text-[17px] placeholder:text-[#8E8E93] leading-[21px]"
             />
           </div>
