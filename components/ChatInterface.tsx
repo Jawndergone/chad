@@ -207,7 +207,7 @@ export default function ChatInterface({ userName, userProfile, userId }: ChatInt
   return (
     <div className="flex flex-col h-full bg-black">
       {/* Header */}
-      <div className="bg-[#1C1C1E] border-b border-gray-800 pt-2 pb-3">
+      <div className="bg-[#1C1C1E] border-b border-gray-800 pt-3 pb-3 flex-shrink-0">
         <div className="flex items-center justify-center">
           <div className="text-center">
             <div className="w-16 h-16 rounded-2xl mx-auto mb-2 overflow-hidden shadow-md">
@@ -279,7 +279,7 @@ export default function ChatInterface({ userName, userProfile, userId }: ChatInt
       </div>
 
       {/* Input */}
-      <div className="border-t border-[#2C2C2E] bg-[#1C1C1E] px-4 py-2.5">
+      <div className="border-t border-[#2C2C2E] bg-[#1C1C1E] px-4 py-2.5 flex-shrink-0">
         <div className="flex items-center space-x-2">
           <div className="flex-1 bg-[#2C2C2E] border border-[#3A3A3C] rounded-full px-4 py-2 flex items-center min-h-[36px]">
             <input

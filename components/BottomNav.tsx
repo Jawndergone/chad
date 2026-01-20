@@ -55,7 +55,7 @@ export default function BottomNav({ activeTab, onTabChange, userId, onDataUpdate
   };
 
   return (
-    <div className="relative bg-[#1C1C1E] border-t border-[#2C2C2E] px-2 py-1">
+    <div className="relative bg-[#1C1C1E] border-t border-[#2C2C2E] px-2 py-1.5 flex-shrink-0">
       <div className="flex items-center justify-around">
         {/* Left tabs */}
         <div className="flex-1 flex justify-around">

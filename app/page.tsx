@@ -16,6 +16,23 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'home' | 'goals' | 'progress' | 'log'>('home');
   const [isLoading, setIsLoading] = useState(true);
 
+  // Set mobile viewport height CSS variable
+  useEffect(() => {
+    const setViewportHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', setViewportHeight);
+
+    return () => {
+      window.removeEventListener('resize', setViewportHeight);
+      window.removeEventListener('orientationchange', setViewportHeight);
+    };
+  }, []);
+
   // Check for existing user on mount
   useEffect(() => {
     const storedUserId = localStorage.getItem('chadUserId');
@@ -94,9 +111,9 @@ export default function Home() {
       {stage === 'chat' && userProfile && (
         <>
           {/* Mobile: Full Screen (no iPhone frame) */}
-          <div className="md:hidden h-screen w-full bg-black flex flex-col">
+          <div className="md:hidden fixed inset-0 w-full bg-black flex flex-col">
             {/* Content */}
-            <div className="flex-1 overflow-hidden flex flex-col">
+            <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
               {activeTab === 'home' && <ChatInterface userName={userProfile.name} userProfile={userProfile} userId={userId!} />}
               {activeTab === 'goals' && <GoalsView userProfile={userProfile} userId={userId!} />}
               {activeTab === 'progress' && <ProgressView userProfile={userProfile} userId={userId!} />}
