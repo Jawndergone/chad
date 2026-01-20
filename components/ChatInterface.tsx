@@ -147,15 +147,18 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
     }
   };
 
+  const handleInputTouch = () => {
+    // Remove readonly on touch/click BEFORE focus event
+    setIsInputReadonly(false);
+  };
+
   const handleInputFocus = () => {
-    // Remove readonly after a tiny delay to prevent Safari QuickType
-    setTimeout(() => setIsInputReadonly(false), 100);
     onInputFocusChange?.(true);
   };
 
   const handleInputBlur = () => {
-    // Re-enable readonly when input loses focus
-    setIsInputReadonly(true);
+    // Re-enable readonly when input loses focus to prevent QuickType on next focus
+    setTimeout(() => setIsInputReadonly(true), 100);
     onInputFocusChange?.(false);
   };
 
@@ -323,6 +326,8 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyPress={handleKeyPress}
+              onTouchStart={handleInputTouch}
+              onClick={handleInputTouch}
               onFocus={handleInputFocus}
               onBlur={handleInputBlur}
               placeholder="iMessage"
