@@ -306,6 +306,7 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
           <div className="flex-1 bg-[#2C2C2E] rounded-[18px] px-3.5 py-1.5 flex items-center min-h-[33px]">
             <input
               type="text"
+              name="message"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -316,6 +317,8 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
               autoCorrect="on"
               autoCapitalize="sentences"
               spellCheck="true"
+              data-form-type="other"
+              enterKeyHint="send"
               className="flex-1 bg-transparent outline-none text-white text-[17px] placeholder:text-[#8E8E93] leading-[21px]"
             />
           </div>
