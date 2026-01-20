@@ -228,16 +228,16 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
       <div className="flex-1 overflow-y-auto px-4 pt-4 pb-2 bg-black">
         {/* Contact Header (scrollable) */}
         <div className="flex flex-col items-center mb-6 pt-2">
-          <div className="w-16 h-16 rounded-full overflow-hidden shadow-lg mb-2">
+          <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg mb-2">
             <Image
               src="/chad-logo.png"
               alt="Chad"
-              width={64}
-              height={64}
+              width={80}
+              height={80}
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="font-semibold text-white text-[15px]">Chad</div>
+          <div className="font-semibold text-white text-[16px]">Chad</div>
         </div>
 
         <div className="space-y-2">
