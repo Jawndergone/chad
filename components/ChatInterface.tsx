@@ -19,6 +19,7 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [isInputReadonly, setIsInputReadonly] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Load message history on mount
   useEffect(() => {
@@ -151,6 +152,10 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
   const handleInputTouch = () => {
     // Remove readonly on touch/click BEFORE focus event
     setIsInputReadonly(false);
+    // Programmatically focus the input after a brief delay to ensure readonly is removed
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 10);
   };
 
   const handleInputFocus = () => {
@@ -322,6 +327,7 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
           {/* Input field */}
           <div className="flex-1 bg-[#2C2C2E] rounded-[18px] px-3.5 py-1.5 flex items-center min-h-[33px]">
             <input
+              ref={inputRef}
               type="text"
               name="message"
               value={inputText}
