@@ -33,6 +33,65 @@ export async function POST(request: NextRequest) {
 
     const onboardingComplete = userProfileData?.onboarding_complete ?? false;
 
+    // If onboarding not complete, return hardcoded breakdown messages
+    if (!onboardingComplete) {
+      const { calculateTDEE } = await import('@/lib/macros');
+      const tdee = calculateTDEE(userProfile as OnboardingData);
+      const deficit = tdee - macros.calories;
+      const surplus = macros.calories - tdee;
+      const profile = userProfile as OnboardingData;
+
+      const breakdownMessages = [
+        `Alright ${profile.name}`,
+        `You weigh ${profile.weightLbs} lbs right now`,
+        ...(profile.targetWeight ? [
+          `Want to get to ${profile.targetWeight} lbs`,
+          `That's ${Math.abs(profile.weightLbs - profile.targetWeight)} lbs to ${profile.weightLbs > profile.targetWeight ? 'lose' : 'gain'}`
+        ] : []),
+        `Your maintenance calories are around ${tdee} cal`,
+        `That's what you need to stay at ${profile.weightLbs} lbs`,
+        profile.goalType === 'cut' ? `But you're cutting` : profile.goalType === 'bulk' ? `But you're bulking` : `You're maintaining`,
+        profile.goalType === 'cut' ? `So we're doing a ${deficit} cal deficit` : profile.goalType === 'bulk' ? `So we're doing a ${surplus} cal surplus` : `So stick to maintenance`,
+        `That puts you at ${macros.calories} cal per day`,
+        `Here's your macro breakdown`,
+        `${macros.protein}g protein per day`,
+        `${macros.carbs}g carbs`,
+        `${macros.fats}g fat`,
+        `Protein's high to preserve muscle`,
+        `Carbs and fats balanced for energy`,
+        `How often do you work out?`,
+      ];
+
+      // Save all breakdown messages to database
+      const savedMessages: any[] = [];
+      for (const content of breakdownMessages) {
+        const { data } = await supabase
+          .from('messages')
+          .insert({
+            user_id: userId,
+            role: 'assistant',
+            content,
+          })
+          .select()
+          .single();
+
+        if (data) {
+          savedMessages.push({
+            id: data.id,
+            user_id: userId,
+            role: 'assistant',
+            content,
+            timestamp: data.created_at,
+          });
+        }
+      }
+
+      return NextResponse.json({
+        messages: savedMessages,
+        macros,
+      });
+    }
+
     // Get today's meals (both from chat and manual logs)
     const today = new Date().toISOString().split('T')[0];
     const { data: todaysMeals } = await supabase
