@@ -8,8 +8,8 @@ import WeightLogForm from './WeightLogForm';
 import ExerciseLogForm from './ExerciseLogForm';
 
 interface BottomNavProps {
-  activeTab: 'home' | 'goals' | 'progress' | 'log';
-  onTabChange: (tab: 'home' | 'goals' | 'progress' | 'log') => void;
+  activeTab: 'home' | 'calendar' | 'progress' | 'log';
+  onTabChange: (tab: 'home' | 'calendar' | 'progress' | 'log') => void;
   userId: string;
   onDataUpdate?: () => void;
 }
@@ -28,7 +28,7 @@ export default function BottomNav({ activeTab, onTabChange, userId, onDataUpdate
 
   const rightTabs = [
     { id: 'progress' as const, label: 'Progress', icon: '📈' },
-    { id: 'goals' as const, label: 'Goals', icon: '🎯' },
+    { id: 'calendar' as const, label: 'Calendar', icon: '📅' },
   ];
 
   const handleAddFood = () => {

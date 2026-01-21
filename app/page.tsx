@@ -5,7 +5,7 @@ import LandingPage from '@/components/LandingPage';
 import OnboardingFlow, { OnboardingData } from '@/components/OnboardingFlow';
 import ChatInterface from '@/components/ChatInterface';
 import BottomNav from '@/components/BottomNav';
-import GoalsView from '@/components/GoalsView';
+import CalendarView from '@/components/CalendarView';
 import ProgressView from '@/components/ProgressView';
 import LogView from '@/components/LogView';
 
@@ -13,7 +13,7 @@ export default function Home() {
   const [stage, setStage] = useState<'landing' | 'onboarding' | 'chat'>('landing');
   const [userProfile, setUserProfile] = useState<OnboardingData | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'home' | 'goals' | 'progress' | 'log'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'calendar' | 'progress' | 'log'>('home');
   const [isLoading, setIsLoading] = useState(true);
   const [isInputFocused, setIsInputFocused] = useState(false);
 
@@ -116,7 +116,7 @@ export default function Home() {
             {/* Content */}
             <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
               {activeTab === 'home' && <ChatInterface userName={userProfile.name} userProfile={userProfile} userId={userId!} onInputFocusChange={setIsInputFocused} />}
-              {activeTab === 'goals' && <GoalsView userProfile={userProfile} userId={userId!} />}
+              {activeTab === 'calendar' && <CalendarView userId={userId!} />}
               {activeTab === 'progress' && <ProgressView userProfile={userProfile} userId={userId!} />}
               {activeTab === 'log' && <LogView userId={userId!} />}
             </div>
@@ -161,7 +161,7 @@ export default function Home() {
                 {/* Content */}
                 <div className="flex-1 overflow-hidden flex flex-col mt-11">
                   {activeTab === 'home' && <ChatInterface userName={userProfile.name} userProfile={userProfile} userId={userId!} onInputFocusChange={setIsInputFocused} />}
-                  {activeTab === 'goals' && <GoalsView userProfile={userProfile} userId={userId!} />}
+                  {activeTab === 'calendar' && <CalendarView userId={userId!} />}
                   {activeTab === 'progress' && <ProgressView userProfile={userProfile} userId={userId!} />}
                   {activeTab === 'log' && <LogView userId={userId!} />}
                 </div>
