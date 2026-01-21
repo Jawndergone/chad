@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
         daily_protein_g: macros.protein,
         daily_carbs_g: macros.carbs,
         daily_fats_g: macros.fats,
+        onboarding_complete: false, // Explicitly set to false for new users
       })
       .select()
       .single();
