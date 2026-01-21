@@ -24,6 +24,15 @@ export async function POST(request: NextRequest) {
     // Calculate user's macro targets
     const macros = calculateMacros(userProfile as OnboardingData);
 
+    // Check if user has completed onboarding
+    const { data: userProfileData } = await supabase
+      .from('user_profiles')
+      .select('onboarding_complete')
+      .eq('id', userId)
+      .single();
+
+    const onboardingComplete = userProfileData?.onboarding_complete ?? false;
+
     // Get today's meals (both from chat and manual logs)
     const today = new Date().toISOString().split('T')[0];
     const { data: todaysMeals } = await supabase
@@ -70,7 +79,7 @@ export async function POST(request: NextRequest) {
       .limit(7);
 
     // Create Chad's system prompt
-    let systemPrompt = createChadSystemPrompt(userProfile, macros);
+    let systemPrompt = createChadSystemPrompt(userProfile, macros, onboardingComplete);
 
     // Load learned user preferences
     const userPreferences = await loadUserPreferences(userId);
@@ -195,6 +204,30 @@ export async function POST(request: NextRequest) {
     }
 
     const savedAiMessage = savedMessages[0]; // Use first message for meal extraction
+
+    // Check if Chad completed onboarding and mark it
+    if (!onboardingComplete && aiMessage) {
+      const onboardingCompletePhrases = [
+        "let's start tracking",
+        "let's get tracking",
+        "ready to track",
+        "start logging",
+        "got what i need",
+        "got everything i need"
+      ];
+
+      const messageText = aiMessage.toLowerCase();
+      const shouldCompleteOnboarding = onboardingCompletePhrases.some(phrase =>
+        messageText.includes(phrase)
+      );
+
+      if (shouldCompleteOnboarding) {
+        await supabase
+          .from('user_profiles')
+          .update({ onboarding_complete: true })
+          .eq('id', userId);
+      }
+    }
 
     // Try to extract meal data from AI response
     // Look for patterns like "Estimated: XXX cal | XXg protein | XXg carbs | XXg fat"

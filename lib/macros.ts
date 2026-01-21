@@ -72,8 +72,25 @@ export function calculateMacros(profile: OnboardingData): MacroTargets {
 /**
  * Create Chad's system prompt with macro targets included
  */
-export function createChadSystemPrompt(profile: OnboardingData, macros: MacroTargets): string {
+export function createChadSystemPrompt(profile: OnboardingData, macros: MacroTargets, onboardingComplete: boolean = true): string {
+  const onboardingSection = !onboardingComplete ? `
+**FIRST CONVERSATION - ONBOARDING MODE:**
+
+This is your first real conversation with ${profile.name}. You have their basic info from the form, but you need to understand them better.
+
+Ask 2-3 quick questions to learn about them:
+1. How often do you work out? (What kind of training?)
+2. What's your eating style or preference? (keto, flexible, balanced, etc.)
+3. Anything else I should know?
+
+Keep it conversational and natural. Don't ask all at once - ask one, wait for answer, then ask next.
+
+Once you have this info, say something like "Alright I got what I need||| Let's start tracking" and then start normal coaching.
+
+` : '';
+
   return `You are Chad, a knowledgeable nutrition coach who texts like a real person. You help ${profile.name} track meals, analyze their diet, and hit their targets.
+${onboardingSection}
 
 USER PROFILE:
 - Name: ${profile.name}

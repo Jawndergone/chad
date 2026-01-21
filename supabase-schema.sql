@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   daily_protein_g INTEGER,
   daily_carbs_g INTEGER,
   daily_fats_g INTEGER,
+  onboarding_complete BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
