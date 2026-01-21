@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
 
     const aiMessage = completion.choices[0].message.content;
 
-    // Force split messages if AI didn't use separators
+    // Force split messages if AI didn't use separators - AGGRESSIVE SPLITTING
     function forceSplitMessage(text: string | null): string[] {
       if (!text) return [];
 
@@ -189,40 +189,48 @@ export async function POST(request: NextRequest) {
         return text.split('||| ').filter(part => part.trim());
       }
 
-      // Otherwise, force split by sentences
-      const sentences = text
-        .split(/(?<=[.!?])\s+/) // Split on sentence boundaries
-        .filter(s => s.trim().length > 0);
-
-      // Further split long sentences (over 50 chars or 8 words)
       const parts: string[] = [];
+
+      // Step 1: Split by sentences (., !, ?)
+      const sentences = text.split(/(?<=[.!?])\s+/).filter(s => s.trim());
+
       for (const sentence of sentences) {
-        const words = sentence.trim().split(/\s+/);
+        const trimmed = sentence.trim();
 
-        if (words.length <= 8) {
-          // Short enough, keep as is
-          parts.push(sentence.trim());
-        } else {
-          // Too long, split by commas or after ~6-7 words
-          const chunks: string[] = [];
-          let currentChunk: string[] = [];
+        // Step 2: Split by natural breaks (|, commas, colons)
+        const segments = trimmed.split(/\s*[|:,]\s*/).filter(s => s.trim());
 
-          for (let i = 0; i < words.length; i++) {
-            currentChunk.push(words[i]);
+        for (const segment of segments) {
+          const words = segment.trim().split(/\s+/);
 
-            // Split at commas, or every 7 words
-            const lastWord = words[i];
-            if (lastWord.includes(',') || currentChunk.length >= 7 || i === words.length - 1) {
-              chunks.push(currentChunk.join(' ').replace(/,$/, ''));
-              currentChunk = [];
+          // Step 3: If still over 7 words, force split every 6 words
+          if (words.length <= 7) {
+            parts.push(segment.trim());
+          } else {
+            // Split into chunks of max 6 words
+            for (let i = 0; i < words.length; i += 6) {
+              const chunk = words.slice(i, i + 6).join(' ');
+              if (chunk.trim()) {
+                parts.push(chunk.trim());
+              }
             }
           }
-
-          parts.push(...chunks.filter(c => c.trim().length > 0));
         }
       }
 
-      return parts;
+      // Filter out empty parts and ensure no part is over 50 characters or 7 words
+      return parts.filter(p => p.length > 0).flatMap(part => {
+        const words = part.split(/\s+/);
+        if (words.length > 7 || part.length > 60) {
+          // Still too long, split harder
+          const chunks: string[] = [];
+          for (let i = 0; i < words.length; i += 5) {
+            chunks.push(words.slice(i, i + 5).join(' '));
+          }
+          return chunks;
+        }
+        return [part];
+      });
     }
 
     // Split message by "||| " or force split if not present
