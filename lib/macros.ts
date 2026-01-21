@@ -8,6 +8,26 @@ export interface MacroTargets {
 }
 
 /**
+ * Calculate TDEE (Total Daily Energy Expenditure) - maintenance calories
+ */
+export function calculateTDEE(profile: OnboardingData): number {
+  const { heightInches, weightLbs } = profile;
+
+  const weightKg = weightLbs * 0.453592;
+  const heightCm = heightInches * 2.54;
+  const age = 30; // Default age
+
+  // Mifflin-St Jeor BMR
+  const bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * age) - 161;
+
+  // Activity multiplier (moderate activity)
+  const activityMultiplier = 1.55;
+  const tdee = bmr * activityMultiplier;
+
+  return Math.round(tdee);
+}
+
+/**
  * Calculate daily macro targets based on user profile
  * Uses Mifflin-St Jeor equation for BMR, then applies activity multiplier and goal adjustments
  */
@@ -73,19 +93,35 @@ export function calculateMacros(profile: OnboardingData): MacroTargets {
  * Create Chad's system prompt with macro targets included
  */
 export function createChadSystemPrompt(profile: OnboardingData, macros: MacroTargets, onboardingComplete: boolean = true): string {
+  const tdee = calculateTDEE(profile);
+  const deficit = tdee - macros.calories;
+  const surplus = macros.calories - tdee;
+
   const onboardingSection = !onboardingComplete ? `
 **FIRST CONVERSATION - ONBOARDING MODE:**
 
-This is your first real conversation with ${profile.name}. You have their basic info from the form, but you need to understand them better.
+This is your first real conversation with ${profile.name}. You have their basic info from the form.
 
-Ask 2-3 quick questions to learn about them:
+**STEP 1: Give them a comprehensive breakdown of their plan**
+
+Start by explaining their situation and targets in short messages:
+- "Alright ${profile.name}||| You weigh ${profile.weightLbs} lbs right now${profile.targetWeight ? `||| Want to get to ${profile.targetWeight} lbs` : ''}||| That's ${profile.targetWeight ? Math.abs(profile.weightLbs - profile.targetWeight) + ' lbs to ' + (profile.weightLbs > profile.targetWeight ? 'lose' : 'gain') : 'maintaining your current weight'}"
+- "Your maintenance calories are around ${tdee} cal||| That's what you need to stay at ${profile.weightLbs} lbs"
+- ${profile.goalType === 'cut' ? `"But you're cutting||| So we're doing a ${deficit} cal deficit||| That puts you at ${macros.calories} cal per day"` : profile.goalType === 'bulk' ? `"But you're bulking||| So we're doing a ${surplus} cal surplus||| That puts you at ${macros.calories} cal per day"` : `"You're maintaining||| So stick to ${macros.calories} cal per day"`}
+- "Here's your macro breakdown||| ${macros.protein}g protein per day||| ${macros.carbs}g carbs||| ${macros.fats}g fat"
+- "Protein's high to preserve muscle while cutting||| Carbs and fats are balanced for energy"
+
+**STEP 2: Then ask 2-3 quick questions**
+
+After giving the breakdown, ask:
 1. How often do you work out? (What kind of training?)
 2. What's your eating style or preference? (keto, flexible, balanced, etc.)
-3. Anything else I should know?
 
-Keep it conversational and natural. Don't ask all at once - ask one, wait for answer, then ask next.
+Keep it conversational. Ask one, wait for answer, then ask next.
 
-Once you have this info, say something like "Alright I got what I need||| Let's start tracking" and then start normal coaching.
+**STEP 3: Finish onboarding**
+
+Once you have their answers, say "Alright I got what I need||| Let's start tracking" and begin normal coaching.
 
 ` : '';
 
