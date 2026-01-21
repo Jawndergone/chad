@@ -180,8 +180,53 @@ export async function POST(request: NextRequest) {
 
     const aiMessage = completion.choices[0].message.content;
 
-    // Split message by "||| " if present (for multi-message responses)
-    const messageParts = aiMessage?.split('||| ').filter(part => part.trim()) || [aiMessage];
+    // Force split messages if AI didn't use separators
+    function forceSplitMessage(text: string | null): string[] {
+      if (!text) return [];
+
+      // If already has separators, use them
+      if (text.includes('||| ')) {
+        return text.split('||| ').filter(part => part.trim());
+      }
+
+      // Otherwise, force split by sentences
+      const sentences = text
+        .split(/(?<=[.!?])\s+/) // Split on sentence boundaries
+        .filter(s => s.trim().length > 0);
+
+      // Further split long sentences (over 50 chars or 8 words)
+      const parts: string[] = [];
+      for (const sentence of sentences) {
+        const words = sentence.trim().split(/\s+/);
+
+        if (words.length <= 8) {
+          // Short enough, keep as is
+          parts.push(sentence.trim());
+        } else {
+          // Too long, split by commas or after ~6-7 words
+          const chunks: string[] = [];
+          let currentChunk: string[] = [];
+
+          for (let i = 0; i < words.length; i++) {
+            currentChunk.push(words[i]);
+
+            // Split at commas, or every 7 words
+            const lastWord = words[i];
+            if (lastWord.includes(',') || currentChunk.length >= 7 || i === words.length - 1) {
+              chunks.push(currentChunk.join(' ').replace(/,$/, ''));
+              currentChunk = [];
+            }
+          }
+
+          parts.push(...chunks.filter(c => c.trim().length > 0));
+        }
+      }
+
+      return parts;
+    }
+
+    // Split message by "||| " or force split if not present
+    const messageParts = forceSplitMessage(aiMessage);
 
     // Save all message parts to database
     const savedMessages: any[] = [];
