@@ -21,6 +21,31 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Trigger onboarding breakdown automatically
+  const triggerOnboardingBreakdown = async () => {
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'hey' }],
+          userProfile,
+          userId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.messages) {
+        setMessages(data.messages);
+      }
+    } catch (error) {
+      console.error('Error triggering onboarding:', error);
+    }
+  };
+
   // Load message history on mount
   useEffect(() => {
     const loadMessages = async () => {
@@ -39,101 +64,13 @@ export default function ChatInterface({ userName, userProfile, userId, onInputFo
             }))
           );
         } else {
-          // No history, show welcome messages (multiple short messages)
-          const now = new Date().toISOString();
-          setMessages([
-            {
-              id: '1',
-              user_id: 'system',
-              role: 'assistant',
-              content: `Hey ${userName}`,
-              timestamp: now,
-            },
-            {
-              id: '2',
-              user_id: 'system',
-              role: 'assistant',
-              content: `I'm Chad`,
-              timestamp: now,
-            },
-            {
-              id: '3',
-              user_id: 'system',
-              role: 'assistant',
-              content: `Your fitness buddy`,
-              timestamp: now,
-            },
-            {
-              id: '4',
-              user_id: 'system',
-              role: 'assistant',
-              content: `I calculated your daily targets`,
-              timestamp: now,
-            },
-            {
-              id: '5',
-              user_id: 'system',
-              role: 'assistant',
-              content: `Just text me what you're eating`,
-              timestamp: now,
-            },
-            {
-              id: '6',
-              user_id: 'system',
-              role: 'assistant',
-              content: `I'll track everything for you`,
-              timestamp: now,
-            },
-          ]);
+          // No history - trigger onboarding breakdown
+          triggerOnboardingBreakdown();
         }
       } catch (error) {
         console.error('Error loading messages:', error);
-        // Show welcome messages on error (multiple short messages)
-        const now = new Date().toISOString();
-        setMessages([
-          {
-            id: '1',
-            user_id: 'system',
-            role: 'assistant',
-            content: `Hey ${userName}`,
-            timestamp: now,
-          },
-          {
-            id: '2',
-            user_id: 'system',
-            role: 'assistant',
-            content: `I'm Chad`,
-            timestamp: now,
-          },
-          {
-            id: '3',
-            user_id: 'system',
-            role: 'assistant',
-            content: `Your fitness buddy`,
-            timestamp: now,
-          },
-          {
-            id: '4',
-            user_id: 'system',
-            role: 'assistant',
-            content: `I calculated your daily targets`,
-            timestamp: now,
-          },
-          {
-            id: '5',
-            user_id: 'system',
-            role: 'assistant',
-            content: `Just text me what you're eating`,
-            timestamp: now,
-          },
-          {
-            id: '6',
-            user_id: 'system',
-            role: 'assistant',
-            content: `I'll track everything for you`,
-            timestamp: now,
-          },
-        ]);
+        // Trigger onboarding on error too
+        triggerOnboardingBreakdown();
       } finally {
         setIsLoadingHistory(false);
       }
